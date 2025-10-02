@@ -93,6 +93,18 @@ void PendingTransaction::setFilename(const QString &fileName)
     m_fileName = fileName;
 }
 
+QString PendingTransaction::address() const
+{
+    std::vector<std::string> addresses = m_pimpl->dest_addresses();
+    return QString::fromStdString(addresses[0]); // assume only one non change destination for GUI transactions
+}
+
+quint32 PendingTransaction::signerCount() const
+{
+    std::vector<std::string> signersKeys = m_pimpl->signersKeys();
+    return static_cast<quint32>(signersKeys.size());
+}
+
 PendingTransaction::PendingTransaction(Monero::PendingTransaction *pt, QObject *parent)
     : QObject(parent), m_pimpl(pt)
 {

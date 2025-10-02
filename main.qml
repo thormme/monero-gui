@@ -81,6 +81,7 @@ ApplicationWindow {
     property alias toolTip: toolTip
     property string walletName
     property bool viewOnly: false
+    property bool isMultisig: false
     property bool foundNewBlock: false
     property bool qrScannerEnabled: (typeof builtWithScanner != "undefined") && builtWithScanner
     property int blocksToSync: 1
@@ -167,6 +168,7 @@ ApplicationWindow {
         else if(seq === "Ctrl+E") middlePanel.state = "Settings"
         else if(seq === "Ctrl+D") middlePanel.state = "Advanced"
         else if(seq === "Ctrl+T") middlePanel.state = "Account"
+        else if(seq === "Ctrl+Q") middlePanel.state = "SignMultisig"
         else if(seq === "Ctrl+Tab" || seq === "Alt+Tab") {
             /*
             if(middlePanel.state === "Transfer") middlePanel.state = "Receive"
@@ -183,6 +185,11 @@ ApplicationWindow {
             else if(middlePanel.state === "Transfer") middlePanel.state = "AddressBook"
             else if(middlePanel.state === "AddressBook") middlePanel.state = "Receive"
             else if(middlePanel.state === "Receive") middlePanel.state = "History"
+            else if(middlePanel.state === "Mining") middlePanel.state = "TxKey"
+            else if(middlePanel.state === "TxKey") middlePanel.state = "SharedRingDB"
+            else if(middlePanel.state === "SharedRingDB") middlePanel.state = "Sign"
+            else if(middlePanel.state === "Sign") middlePanel.state = "Settings"
+            else if(middlePanel.state === "SignMultisig") middlePanel.state = "SignMultisig"
             else if(middlePanel.state === "History") middlePanel.state = "Advanced"
             else if(middlePanel.state === "Advanced") middlePanel.state = "Settings"
         } else if(seq === "Ctrl+Shift+Backtab" || seq === "Alt+Shift+Backtab") {
@@ -203,6 +210,7 @@ ApplicationWindow {
             else if(middlePanel.state === "AddressBook") middlePanel.state = "Transfer"
             else if(middlePanel.state === "Transfer") middlePanel.state = "Account"
             else if(middlePanel.state === "Account") middlePanel.state = "Settings"
+            else if (middlePanel.state === "SignMultisig") middlePanel.state = "SignMultisig"
         }
 
         if (middlePanel.state !== "Advanced") updateBalance();
@@ -334,7 +342,10 @@ ApplicationWindow {
         walletName = usefulName(wallet.path)
 
         viewOnly = currentWallet.viewOnly;
+
         backgroundSyncType = currentWallet.getBackgroundSyncType();
+
+        isMultisig = currentWallet.isMultisig;
 
         // New wallets saves the testnet flag in keys file.
         if(persistentSettings.nettype != currentWallet.nettype) {
@@ -919,7 +930,7 @@ ApplicationWindow {
 
         } else if (transaction.txCount == 0) {
             console.error("Can't create transaction: ", transaction.errorString);
-            txConfirmationPopup.errorText.text   = qsTr("No unmixable outputs to sweep") + translationManager.emptyString
+            txConfirmationPopup.errorText.text   = transaction.errorString
             // deleting transaction object, we don't want memleaks
             currentWallet.disposeTransaction(transaction);
         } else {
@@ -929,8 +940,8 @@ ApplicationWindow {
             // here we update txConfirmationPopup
             txConfirmationPopup.transactionAmount = Utils.removeTrailingZeros(walletManager.displayAmount(transaction.amount));
             txConfirmationPopup.transactionFee = Utils.removeTrailingZeros(walletManager.displayAmount(transaction.fee));
-            txConfirmationPopup.confirmButton.text = viewOnly ? qsTr("Save as file") : qsTr("Confirm") + translationManager.emptyString;
-            txConfirmationPopup.confirmButton.rightIcon = viewOnly ? "" : "qrc:///images/rightArrow.png"
+            txConfirmationPopup.confirmButton.text = isMultisig ? qsTr("Save as file") : qsTr("Confirm") + translationManager.emptyString;
+            txConfirmationPopup.confirmButton.rightIcon = isMultisig ? "" : "qrc:///images/rightArrow.png"
         }
     }
 
@@ -1026,7 +1037,7 @@ ApplicationWindow {
     // called after user confirms transaction
     function handleTransactionConfirmed(fileName) {
         // View only wallet - we save the tx
-        if(viewOnly){
+        if((viewOnly || isMultisig) && saveTxDialog.fileUrl){
             // No file specified - abort
             if(!saveTxDialog.fileUrl) {
                 currentWallet.disposeTransaction(transaction)
@@ -1060,7 +1071,7 @@ ApplicationWindow {
             // Clear tx fields
             middlePanel.transferView.clearFields()
             txConfirmationPopup.clearFields()
-            successfulTxPopup.open(txid)
+            successfulTxPopup.open(transaction.txid ? transaction.txid : "")
         }
         currentWallet.refresh()
         currentWallet.disposeTransaction(transaction)
@@ -1510,6 +1521,8 @@ ApplicationWindow {
         property bool keyReuseMitigation2: true
         property int segregationHeight: 0
         property int kdfRounds: 1
+        property int multisigThreshold: 2
+        property int multisigSigners: 1
         property bool displayWalletNameInTitleBar: true
         property bool hideBalance: false
         property bool askPasswordBeforeSending: true
@@ -1663,9 +1676,10 @@ ApplicationWindow {
         onAccepted: {
             var handleAccepted = function() {
                 // Save transaction to file if view only wallet
-                if (viewOnly) {
+                if (viewOnly || isMultisig) {
                     saveTxDialog.open();
-                } else {
+                }
+                else {
                     handleTransactionConfirmed()
                 }
             }
@@ -1684,8 +1698,8 @@ ApplicationWindow {
                 passwordDialog.open(
                     "",
                     "",
-                    (appWindow.viewOnly ? qsTr("Save transaction file") : qsTr("Send transaction")) + translationManager.emptyString,
-                    appWindow.viewOnly ? "" : FontAwesome.arrowCircleRight);
+                    ((appWindow.viewOnly || appWindow.isMultisig) ? qsTr("Save transaction file") : qsTr("Send transaction")) + translationManager.emptyString,
+                    (appWindow.viewOnly || appWindow.isMultisig) ? "" : FontAwesome.arrowCircleRight);
             }
         }
     }
@@ -1924,6 +1938,12 @@ ApplicationWindow {
 
                 onAccountClicked: {
                     middlePanel.state = "Account";
+                    middlePanel.flickable.contentY = 0;
+                    updateBalance();
+                }
+
+                onSignMultisigClicked: {
+                    middlePanel.state = "SignMultisig";
                     middlePanel.flickable.contentY = 0;
                     updateBalance();
                 }

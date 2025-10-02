@@ -63,11 +63,13 @@ Rectangle {
 
             WizardNav {
                 progressSteps: appWindow.walletMode <= 1 ? 4 : 5
-                progress: 2
+                progress: wizardController.m_wallet.isMultisig ? 3 : 2;
                 btnNext.enabled: passwordFields.calcStrengthAndVerify();
                 onPrevClicked: {
                     if(wizardController.walletOptionsIsRecoveringFromDevice){
                         wizardStateView.state = "wizardCreateDevice1";
+                    } else if (wizardController.m_wallet.isMultisig) {
+                        wizardStateView.state = "wizardCreateMultisig2";
                     } else {
                         wizardStateView.state = "wizardCreateWallet2";
                         wizardStateView.wizardCreateWallet2View.pageRoot.forceActiveFocus();

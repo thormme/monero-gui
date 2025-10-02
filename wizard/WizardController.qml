@@ -73,6 +73,12 @@ Rectangle {
         wizardController.walletOptionsDeviceIsRestore = false;
         wizardController.tmpWalletFilename = '';
         wizardController.walletOptionsSubaddressLookahead = '';
+        wizardController.walletOptionsMultisigInfo2 = '';
+        wizardController.walletOptionsMultisigKex = '';
+        wizardController.walletOptionsMultisigKex2 = '';
+        wizardController.walletOptionsMultisigKex3 = '';
+        wizardController.walletOptionsMultisigKex4 = '';
+        
         disconnect();
 
         if (typeof wizardController.m_wallet !== 'undefined'){
@@ -107,6 +113,11 @@ Rectangle {
     property string walletOptionsSubaddressLookahead: ''
     property string walletOptionsDeviceName: ''
     property bool   walletOptionsDeviceIsRestore: false
+    property string walletOptionsMultisigInfo2: '' // other participant's multisig keys
+    property string walletOptionsMultisigKex: ''
+    property string walletOptionsMultisigKex2: '' // other participant's kex output
+    property string walletOptionsMultisigKex3: ''
+    property string walletOptionsMultisigKex4: '' // other participant's kex booster output
     property string tmpWalletFilename: ''
 
     // recovery made (restore wallet)
@@ -146,6 +157,10 @@ Rectangle {
         property WizardRestoreWallet3 wizardRestoreWallet3View: WizardRestoreWallet3 { }
         property WizardRestoreWallet4 wizardRestoreWallet4View: WizardRestoreWallet4 { }
         property WizardCreateDevice1 wizardCreateDevice1View: WizardCreateDevice1 { }
+        property WizardCreateMultisig1 wizardCreateMultisig1View: WizardCreateMultisig1 { }
+        property WizardCreateMultisig2 wizardCreateMultisig2View: WizardCreateMultisig2 { }
+        property WizardCreateMultisig3 wizardCreateMultisig3View: WizardCreateMultisig3 { }
+        property WizardCreateMultisig4 wizardCreateMultisig4View: WizardCreateMultisig4 { }
         property WizardOpenWallet1 wizardOpenWallet1View: WizardOpenWallet1 { }
         property WizardModeSelection wizardModeSelectionView: WizardModeSelection { }
         property WizardModeRemoteNodeWarning wizardModeRemoteNodeWarningView: WizardModeRemoteNodeWarning { }
@@ -229,6 +244,22 @@ Rectangle {
                 name: "wizardCreateDevice1"
                 PropertyChanges { target: wizardStateView; currentView: wizardStateView.wizardCreateDevice1View }
                 PropertyChanges { target: wizardFlickable; contentHeight: wizardStateView.wizardCreateDevice1View.pageHeight + 80 }
+            }, State {
+                name: "wizardCreateMultisig1"
+                PropertyChanges { target: wizardStateView; currentView: wizardStateView.wizardCreateMultisig1View }
+                PropertyChanges { target: wizardFlickable; contentHeight: wizardStateView.wizardCreateMultisig1View.pageHeight + 80 }
+            }, State {
+                name: "wizardCreateMultisig2"
+                PropertyChanges { target: wizardStateView; currentView: wizardStateView.wizardCreateMultisig2View }
+                PropertyChanges { target: wizardFlickable; contentHeight: wizardStateView.wizardCreateMultisig2View.pageHeight + 80 }
+            }, State {
+                name: "wizardCreateMultisig3"
+                PropertyChanges { target: wizardStateView; currentView: wizardStateView.wizardCreateMultisig3View }
+                PropertyChanges { target: wizardFlickable; contentHeight: wizardStateView.wizardCreateMultisig3View.pageHeight + 80 }
+            }, State {
+                name: "wizardCreateMultisig4"
+                PropertyChanges { target: wizardStateView; currentView: wizardStateView.wizardCreateMultisig4View }
+                PropertyChanges { target: wizardFlickable; contentHeight: wizardStateView.wizardCreateMultisig4View.pageHeight + 80 }
             }, State {
                 name: "wizardOpenWallet1"
                 PropertyChanges { target: wizardStateView; currentView: wizardStateView.wizardOpenWallet1View }
