@@ -125,7 +125,7 @@ Rectangle {
             WizardNav {
                 progressSteps: 5
                 progress: 3
-                btnNext.enabled: multisigKexBooster2Input.text != "" // TODO: some sort of validation on this
+                btnNext.enabled: true //multisigKexBooster2Input.text != "" // TODO: some sort of validation on this
                 onPrevClicked: {
                     wizardStateView.state = "wizardCreateMultisig3";
                 }

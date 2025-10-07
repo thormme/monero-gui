@@ -133,11 +133,11 @@ Rectangle {
                     wizardController.walletOptionsMultisigKex2 = multisigKex2Input.text;
                     var infoList = wizardController.walletOptionsMultisigKex2.trim().split(",");
                     wizardController.walletOptionsMultisigKex3 = wizardController.m_wallet.exchangeMultisigKeys(infoList);
-                    if (persistentSettings.multisigSigners + 1 === persistentSettings.multisigThreshold) {
-                        wizardStateView.state = "wizardCreateWallet3";
-                    } else {
-                        wizardStateView.state = "wizardCreateMultisig4";
-                    }
+                    // if (persistentSettings.multisigSigners === persistentSettings.multisigThreshold) {
+                    wizardStateView.state = "wizardCreateWallet3";
+                    // } else {
+                    //     wizardStateView.state = "wizardCreateMultisig4";
+                    // }
                 }
             }
         }

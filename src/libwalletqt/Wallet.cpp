@@ -475,7 +475,7 @@ QString Wallet::exchangeMultisigKeys(const QVector<QString> &info)
     {
         iv.push_back(k.toStdString());
     }
-    return QString::fromStdString(m_walletImpl->exchangeMultisigKeys(iv));
+    return QString::fromStdString(m_walletImpl->exchangeMultisigKeys(iv, false));
 }
 
 bool Wallet::hasMultisigPartialKeyImages()

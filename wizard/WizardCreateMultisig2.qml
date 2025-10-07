@@ -133,6 +133,7 @@ Rectangle {
                 onNextClicked: {
                     wizardController.walletOptionsMultisigInfo2 = multisigKey2Input.text;
                     var infoList = wizardController.walletOptionsMultisigInfo2.trim().split(",");
+                    // infoList.push(firstKeyRow.prepareMultisig);
                     persistentSettings.multisigSigners = infoList.length;
                     wizardController.walletOptionsMultisigKex = wizardController.m_wallet.makeMultisig(infoList, persistentSettings.multisigThreshold);
                     wizardStateView.state = "wizardCreateMultisig3";

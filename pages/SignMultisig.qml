@@ -132,7 +132,7 @@ Rectangle {
                     console.log("Trying to sign tx");
                     if (!currentWallet.signMultisigTxFromFile(txFilename)) {
                         console.log("Failed to sign tx");
-                        signTxErrorDialog.open()
+                        signTxErrorDialog.open();
                         return;
                     }
                     successfulSigningDialog.open();
@@ -191,7 +191,7 @@ Rectangle {
             if (transaction === null) {
               console.log("transaction null");
               txFilename = "";
-              errorDialog.open()
+              loadTxErrorDialog.open()
               return;
             }
             addressLine.text = transaction.address;
